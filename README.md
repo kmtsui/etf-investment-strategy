@@ -103,6 +103,54 @@ uv run ruff check .
 uv run pytest
 ```
 
+## Running the Analysis
+
+Because `data/raw/` is gitignored, run Step 1 first on a fresh clone to download market data and populate SHA-256 provenance hashes in `data/manifest.json`.
+
+### 1. Fetch & Validate Historical Market Data
+
+```bash
+uv run python -m etf_strategy.data
+```
+
+Downloads daily `SPY`, `QQQ`, and `^IRX` (13-week T-bill yield) histories from `yfinance`, validates schema and price integrity, writes CSVs to `data/raw/`, and updates `data/manifest.json`.
+
+### 2. Run the Full Historical, Synthetic Monte Carlo, & Stress-Test Study
+
+```bash
+uv run python -m etf_strategy.plotting
+```
+
+Verifies `data/raw/*.csv` hashes against `data/manifest.json` and runs:
+- Full-period (`SPY` 1994–2025, `QQQ` 2000–2025) and train/OOS (`<= 2015` vs `2016–2025`) leaderboards across all 17 causal strategies + Oracle bounds.
+- Rolling 5-, 10-, and 20-year windows, bull/bear regime breakdowns, `^IRX` intra-year cash-yield sensitivity, and Monthly DCA day-of-month sensitivity (days 1–28).
+- 1,000-path × 10-year Monte Carlo ensembles for Stationary Block Bootstrap, GJR-GARCH(1,1)-$t$, and the GBM null baseline (calibrated strictly on `SPY <= 2015`, deterministic seed `2026`).
+- All 4 parametric stress archetypes (*Steady Melt-Up*, *V-Shaped Flash Crash*, *Slow-Bleed Bear*, *Lost Decade*).
+
+Outputs are written to `reports/tables/` (CSV tables + `study_audit.json`) and `reports/figures/01_*.png` through `06_*.png`.
+
+### 3. Run Monte Carlo Hyperparameter Fine-Tuning & OOS Validation
+
+```bash
+uv run python -m etf_strategy.tuning
+```
+
+Grid-searches 188 hyperparameter configurations across the 5 technical and adaptive pacing families on 1,000 combined synthetic paths (500 Block Bootstrap + 500 GJR-GARCH(1,1)-$t$, calibrated on `SPY <= 2015`), verifies prefix invariance, and evaluates the MC-selected winners unchanged on actual `SPY`/`QQQ` OOS (`2016–2025`) and full history. Writes `reports/tables/mc_tuning_grid.csv`, `reports/tables/mc_tuned_vs_historical.csv`, and `reports/figures/07_mc_hyperparameter_tuning.png`.
+
+### 4. Verify Code Quality & Domain Invariants
+
+```bash
+uv run ruff check .
+uv run ruff format --check .
+uv run pytest
+```
+
+### Viewing Results
+
+- Written findings and summary tables: [`reports/FINAL_REPORT.md`](reports/FINAL_REPORT.md)
+- Raw result tables & audit metadata: `reports/tables/`
+- Generated charts: `reports/figures/`
+
 ## Roadmap
 
 - [x] Initialize repository, problem specification (`README.md`), and agent guidelines (`AGENTS.md`)
