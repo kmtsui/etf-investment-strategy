@@ -109,7 +109,7 @@ uv run pytest
 - [x] Configure `uv` + `pyproject.toml`, `ruff`, `pytest`, `pre-commit`, CI, and `data/manifest.json`
 - [x] Finalize modeling assumptions (tickers, date range, execution price, fractional shares, cash yield, fees)
 - [x] Acquire and validate historical index/ETF market data (logging provenance in `data/manifest.json`)
-- [ ] Build the buy-only annual backtesting engine with invariant tests
+- [x] Build the buy-only annual backtesting engine with invariant tests
 - [ ] Implement and validate synthetic data generators (Stationary Block Bootstrap, GJR-GARCH(1,1)-$t$, Stress Archetypes, GBM baseline) against empirical stylized facts
 - [ ] Implement benchmarks (Annual Lump Sum, Monthly Fixed-Day DCA, Oracle bounds)
 - [ ] Implement and backtest candidate strategies
