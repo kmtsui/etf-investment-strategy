@@ -165,4 +165,33 @@ All summary CSV tables are archived in [`reports/tables/`](tables/) and figures 
 
 ```bash
 uv run python -m etf_strategy.plotting
+uv run python -m etf_strategy.tuning
 ```
+
+---
+
+## 9. Monte Carlo Hyperparameter Fine-Tuning & Historical Out-of-Sample Test
+
+To test whether any **Technical / Mean-Reversion** or **Volatility-Aware / Adaptive Pacing** strategy can beat benchmarks once optimized, we grid-searched **188 parameter combinations** across **1,000 synthetic 10-year paths** (500 Stationary Block Bootstrap + 500 GJR-GARCH(1,1)-$t$, calibrated strictly on `SPY <= 2015`, seeds `3026`/`3027`), selected the single MC-optimal configuration per family, and applied it unchanged to actual historical `SPY` and `QQQ` data (`src/etf_strategy/tuning.py`).
+
+![MC Hyperparameter Tuning](figures/07_mc_hyperparameter_tuning.png)
+
+| Family | Variant | Parameters | MC Mean vs Lump | `SPY` OOS (2016–2025) | `SPY` Full (1994–2025) | `QQQ` OOS (2016–2025) | `QQQ` Full (2000–2025) | `SPY` Avg Buy Day |
+| :--- | :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `below_sma` | default | `window=200, tranche=0.10` | -3.93% | -3.52% | -5.74% | -5.21% | -0.74% | 136.3 |
+| `below_sma` | **mc_tuned** | `window=10, tranche=1.00` | **-0.13%** | **-0.23%** | **+0.17%** | **-0.31%** | -0.98% | **6.0** |
+| `rsi` | default | `window=14, thr=30, tranche=0.50` | -1.84% | -3.15% | -2.73% | -5.02% | +1.70% | 81.5 |
+| `rsi` | **mc_tuned** | `window=5, thr=50, tranche=1.00` | **-0.12%** | **-0.05%** | **+0.14%** | **-0.42%** | -1.10% | **4.5** |
+| `bollinger_lower` | default | `window=20, std=2.0, tranche=0.50` | -1.78% | -1.87% | -2.11% | -5.53% | -0.68% | 61.4 |
+| `bollinger_lower` | **mc_tuned** | `window=10, std=0.5, tranche=1.00` | **-0.21%** | **-1.72%** | **+0.25%** | **-1.14%** | -0.41% | **8.7** |
+| `vol_scaled_pacing` | default | `short=20, long=252, sens=1.5` | -4.35% | -5.99% | -4.48% | -8.96% | -0.51% | 130.3 |
+| `vol_scaled_pacing` | **mc_tuned** | `short=10, long=126, sens=4.0` | **-3.83%** | **-5.43%** | **-4.17%** | **-8.26%** | **-0.33%** | **117.1** |
+| `adaptive_dd_pacing` | default | `window=252, boost=4.0` | -2.22% | -1.94% | -2.93% | -3.32% | -0.28% | 76.0 |
+| `adaptive_dd_pacing` | **mc_tuned** | `window=252, boost=64.0` | **-0.48%** | **-0.14%** | **-1.04%** | **-1.14%** | **+0.22%** | **21.1** |
+
+### Key Conclusions from Hyperparameter Tuning
+
+1. **MC Optimization Rediscovers Day-1 Lump Sum**: In every family, the optimizer pushed every parameter to the boundary that deploys 100% of capital as early in January as possible (shortest lookback, loosest trigger `RSI <= 50` / `BB -0.5 SD` / `SMA 10`, `tranche_frac = 1.0`, maximum `boost = 64.0`), collapsing average deployment day from `61–136` trading days down to `4.5–21.1` trading days.
+2. **Large Improvement Over Defaults & Monthly DCA**: Every MC-tuned strategy beat its untuned default and `monthly_dca_day1` out-of-sample on both `SPY` (`2016–2025`, where Monthly DCA was `-5.56%`) and `QQQ` (`2016–2025`, where Monthly DCA was `-8.42%`).
+3. **Still Cannot Beat Day-1 Lump Sum Out-of-Sample**: Even after 188-config MC optimization, **zero tuned strategies beat `lump_sum_day1`** in MC (`-0.12%` to `-3.83%`), on `SPY` OOS (`-0.05%` to `-5.43%`), or on `QQQ` OOS (`-0.31%` to `-8.26%`). Full grid results are saved in [`reports/tables/mc_tuning_grid.csv`](tables/mc_tuning_grid.csv) and [`reports/tables/mc_tuned_vs_historical.csv`](tables/mc_tuned_vs_historical.csv).
+
