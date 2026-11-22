@@ -15,6 +15,19 @@ Each calendar year (January through December), an investor has a fixed budget $B
 5. **Automatic Dividend Reinvestment (DRIP)**: All ETF dividends are assumed to be automatically reinvested into the same ETF (modeled via total-return dividend-adjusted prices or explicit same-day reinvestment).
 6. **No Look-Ahead Bias**: All practical strategies must rely strictly on information available on or before the trade execution date.
 
+### Modeling Assumptions (Defaults)
+
+Centralized in `src/etf_strategy/config.py` (`DEFAULT_ASSUMPTIONS`):
+
+- **Target Assets**: `SPY` (S&P 500 ETF) and `QQQ` (Nasdaq-100 ETF), plus `^IRX` (13-week U.S. Treasury Bill yield) for intra-year cash-yield sensitivity.
+- **Historical Range**: All complete calendar years (Jan–Dec) available for each ticker; partial inception or in-progress years are excluded.
+- **Annual Budget**: \$12,000 per calendar year (scale-invariant under fractional shares; \$1,000/month for Monthly DCA).
+- **Execution Price**: Dividend-adjusted close (`adj_close`) on decision day $t$, encoding 100% automatic dividend reinvestment (DRIP).
+- **Shares & Fees**: Fractional shares enabled; \$0 commission baseline.
+- **Intra-Year Cash Yield**: 0% baseline, plus a sensitivity run earning daily `^IRX` risk-free yield on uninvested intra-year cash.
+- **Monthly DCA Benchmark Day**: First trading day of each month (with day-of-month sensitivity across days 1–28 evaluated separately).
+- **Chronological Split**: Complete years through 2015 for training / synthetic calibration; 2016 onward held out for out-of-sample evaluation.
+
 ## Benchmarks
 
 Every candidate strategy is compared against two primary baselines (plus optional theoretical bounds):
@@ -94,8 +107,8 @@ uv run pytest
 
 - [x] Initialize repository, problem specification (`README.md`), and agent guidelines (`AGENTS.md`)
 - [x] Configure `uv` + `pyproject.toml`, `ruff`, `pytest`, `pre-commit`, CI, and `data/manifest.json`
-- [ ] Finalize modeling assumptions (tickers, date range, execution price, fractional shares, cash yield, fees)
-- [ ] Acquire and validate historical index/ETF market data (logging provenance in `data/manifest.json`)
+- [x] Finalize modeling assumptions (tickers, date range, execution price, fractional shares, cash yield, fees)
+- [x] Acquire and validate historical index/ETF market data (logging provenance in `data/manifest.json`)
 - [ ] Build the buy-only annual backtesting engine with invariant tests
 - [ ] Implement and validate synthetic data generators (Stationary Block Bootstrap, GJR-GARCH(1,1)-$t$, Stress Archetypes, GBM baseline) against empirical stylized facts
 - [ ] Implement benchmarks (Annual Lump Sum, Monthly Fixed-Day DCA, Oracle bounds)

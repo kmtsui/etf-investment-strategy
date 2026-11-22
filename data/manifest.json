@@ -1,5 +1,54 @@
 {
   "schema_version": 1,
   "description": "Audit manifest for raw market datasets excluded from git. Tracks ticker, date range, fetch timestamp, row count, and SHA-256 hash so reports remain reproducible despite upstream Adj Close revisions.",
-  "datasets": {}
+  "datasets": {
+    "QQQ": {
+      "ticker": "QQQ",
+      "file": "data/raw/QQQ.csv",
+      "source": "yfinance",
+      "is_yield": false,
+      "start_date": "1999-03-10",
+      "end_date": "2026-11-20",
+      "complete_years": {
+        "first": 2000,
+        "last": 2025,
+        "count": 26
+      },
+      "fetched_at": "2026-11-22T06:12:11Z",
+      "row_count": 6970,
+      "sha256": "f682b35bdc7d2fcacba4024dd6e3b78f2481443db3c0fc222032feb72513a70c"
+    },
+    "SPY": {
+      "ticker": "SPY",
+      "file": "data/raw/SPY.csv",
+      "source": "yfinance",
+      "is_yield": false,
+      "start_date": "1993-01-29",
+      "end_date": "2026-11-20",
+      "complete_years": {
+        "first": 1994,
+        "last": 2025,
+        "count": 32
+      },
+      "fetched_at": "2026-11-22T06:12:10Z",
+      "row_count": 8512,
+      "sha256": "cdc9081de23c00fe666bf2a9f27d0c1ffa3987e6878de83294fec105fd1dc788"
+    },
+    "^IRX": {
+      "ticker": "^IRX",
+      "file": "data/raw/IRX.csv",
+      "source": "yfinance",
+      "is_yield": true,
+      "start_date": "1990-01-02",
+      "end_date": "2026-11-20",
+      "complete_years": {
+        "first": 1990,
+        "last": 2025,
+        "count": 36
+      },
+      "fetched_at": "2026-11-22T06:12:12Z",
+      "row_count": 9260,
+      "sha256": "89ca9637242a2e8e7a524ded5879fcb61041ddefd711d371113ca06f71e9d03d"
+    }
+  }
 }
