@@ -1,0 +1,59 @@
+{
+  "seed": 2026,
+  "mc_paths": 1000,
+  "mc_years": 10,
+  "train_end_year": 2015,
+  "manifest_hashes": {
+    "QQQ": "f682b35bdc7d2fcacba4024dd6e3b78f2481443db3c0fc222032feb72513a70c",
+    "SPY": "cdc9081de23c00fe666bf2a9f27d0c1ffa3987e6878de83294fec105fd1dc788",
+    "^IRX": "89ca9637242a2e8e7a524ded5879fcb61041ddefd711d371113ca06f71e9d03d"
+  },
+  "spy_train_stylized_facts": {
+    "annualized_drift": 0.0856764621900765,
+    "annualized_vol": 0.1919908385184691,
+    "skewness": -0.11123617580370536,
+    "excess_kurtosis": 9.72311328219571,
+    "intra_year_max_dd_p10": -0.28646052692256646,
+    "intra_year_max_dd_p50": -0.11449339535966863,
+    "intra_year_max_dd_p90": -0.0698902401237657,
+    "sq_return_acf_lag1": 0.1796995633415311,
+    "sq_return_acf_lag5": 0.2834146543298435,
+    "sq_return_acf_lag20": 0.16415901420416532,
+    "leverage_corr": -0.11964390585388887
+  },
+  "mc_metadata": {
+    "block_bootstrap": {
+      "model": "block_bootstrap",
+      "seed": 2026,
+      "n_years": 10,
+      "n_paths": 1000,
+      "train_end_year": 2015,
+      "expected_block_length": 20.0
+    },
+    "gjr_garch_t": {
+      "model": "gjr_garch_t",
+      "seed": 2027,
+      "n_years": 10,
+      "n_paths": 1000,
+      "train_end_year": 2015,
+      "params": {
+        "mu": 0.0003399859610717322,
+        "omega": 1.826535858142117e-06,
+        "alpha": 3.5416639368193765e-09,
+        "gamma": 0.18018457883089578,
+        "beta": 0.896488024960456,
+        "nu": 7.636024671086682,
+        "persistence": 0.9865803179175678
+      }
+    },
+    "gbm_null": {
+      "model": "gbm_null",
+      "seed": 2028,
+      "n_years": 10,
+      "n_paths": 1000,
+      "train_end_year": 2015,
+      "annual_log_drift": 0.0856764621900765,
+      "annual_vol": 0.1919908385184691
+    }
+  }
+}

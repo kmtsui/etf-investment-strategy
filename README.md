@@ -113,5 +113,5 @@ uv run pytest
 - [x] Implement and validate synthetic data generators (Stationary Block Bootstrap, GJR-GARCH(1,1)-$t$, Stress Archetypes, GBM baseline) against empirical stylized facts
 - [x] Implement benchmarks (Annual Lump Sum, Monthly Fixed-Day DCA, Oracle bounds)
 - [x] Implement and backtest candidate strategies
-- [ ] Run rolling-window, regime, out-of-sample, synthetic Monte Carlo, and stress-test evaluations
-- [ ] Document final conclusions and visual comparisons in `reports/`
+- [x] Run rolling-window, regime, out-of-sample, synthetic Monte Carlo, and stress-test evaluations
+- [x] Document final conclusions and visual comparisons in [`reports/FINAL_REPORT.md`](reports/FINAL_REPORT.md)
