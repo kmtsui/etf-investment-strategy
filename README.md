@@ -111,7 +111,7 @@ uv run pytest
 - [x] Acquire and validate historical index/ETF market data (logging provenance in `data/manifest.json`)
 - [x] Build the buy-only annual backtesting engine with invariant tests
 - [x] Implement and validate synthetic data generators (Stationary Block Bootstrap, GJR-GARCH(1,1)-$t$, Stress Archetypes, GBM baseline) against empirical stylized facts
-- [ ] Implement benchmarks (Annual Lump Sum, Monthly Fixed-Day DCA, Oracle bounds)
-- [ ] Implement and backtest candidate strategies
+- [x] Implement benchmarks (Annual Lump Sum, Monthly Fixed-Day DCA, Oracle bounds)
+- [x] Implement and backtest candidate strategies
 - [ ] Run rolling-window, regime, out-of-sample, synthetic Monte Carlo, and stress-test evaluations
 - [ ] Document final conclusions and visual comparisons in `reports/`

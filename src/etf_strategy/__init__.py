@@ -8,6 +8,13 @@ from etf_strategy.engine import (
     verify_backtest_invariants,
 )
 from etf_strategy.metrics import compute_xirr, summarize_backtest
+from etf_strategy.strategies import (
+    StrategySpec,
+    build_default_strategy_registry,
+    lump_sum_day1,
+    make_monthly_dca,
+    make_oracle_strategy,
+)
 from etf_strategy.synthetic import (
     GJRGarchParams,
     compute_stylized_facts,
@@ -26,7 +33,9 @@ __all__ = [
     "GJRGarchParams",
     "ModelingAssumptions",
     "StrategyFn",
+    "StrategySpec",
     "assert_prefix_invariance",
+    "build_default_strategy_registry",
     "compute_stylized_facts",
     "compute_xirr",
     "fit_gjr_garch_t",
@@ -34,6 +43,9 @@ __all__ = [
     "generate_gjr_garch_t",
     "generate_stationary_block_bootstrap",
     "generate_stress_archetype",
+    "lump_sum_day1",
+    "make_monthly_dca",
+    "make_oracle_strategy",
     "run_backtest",
     "summarize_backtest",
     "summarize_synthetic_stylized_facts",
