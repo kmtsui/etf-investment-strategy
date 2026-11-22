@@ -49,6 +49,19 @@ Strategies to design, implement, and test include:
 - **Cash Yield Sensitivity**: Comparing 0% uninvested cash yield versus earning a short-term risk-free rate (e.g., 3-month T-bills) while waiting to deploy intra-year cash.
 - **Out-of-Sample Validation**: Chronological train/test splits and walk-forward evaluation to prevent overfitting parameterized strategies.
 
+## Synthetic Data & Stress Testing
+
+Historical ETF records contain only a few dozen calendar years, limiting statistical power and leaving many plausible market paths unobserved. To rigorously test strategies alongside real historical data, the project uses a three-model synthetic suite plus a null-hypothesis baseline:
+
+1. **Stationary Block Bootstrap**: Primary tool for statistical power; resamples contiguous blocks of historical log-returns with random block lengths to preserve volatility clustering, fat tails, and short-term serial dependence across $N = 1,000+$ simulated paths.
+2. **GJR-GARCH(1,1) with Student-$t$ Innovations**: Captures unseen tail risk and asymmetric crash volatility (leverage effect), generating drawdowns deeper than historical blocks alone.
+3. **Parametric Stress Archetypes**: Adversarial scenarios specifically targeting the 100% annual deployment constraint:
+   - *Steady Melt-Up*: Low-volatility upward drift punishing dip-buyers forced into the year-end December sweep.
+   - *V-Shaped Flash Crash*: Sharp intra-year drawdown followed by a full recovery.
+   - *Slow-Bleed Bear Market*: Persistent year-long decline.
+   - *Lost Decade*: Multi-year ~0% net drift with high intra-year volatility.
+4. **Geometric Brownian Motion (GBM) Null Baseline**: Used strictly as an engine sanity check rather than a realism model; under positive-drift IID GBM, intra-year timing has zero mathematical edge over Annual Lump Sum (Day 1).
+
 ## Repository Structure
 
 ```text
@@ -62,7 +75,7 @@ Strategies to design, implement, and test include:
 │   ├── manifest.json            # Committed data provenance log (ticker, range, fetch time, rows, SHA256)
 │   ├── raw/                     # Downloaded historical market data (gitignored)
 │   └── processed/               # Cleaned, aligned datasets (gitignored)
-├── src/etf_strategy/            # Core data loaders, backtesting engine, strategies, and metrics
+├── src/etf_strategy/            # Core data loaders, synthetic generators, backtesting engine, strategies, and metrics
 ├── notebooks/                   # Exploratory data analysis and visualization notebooks
 ├── reports/                     # Generated figures, summary tables, and written findings
 └── tests/                       # Automated unit tests for engine and strategy invariants
@@ -84,7 +97,8 @@ uv run pytest
 - [ ] Finalize modeling assumptions (tickers, date range, execution price, fractional shares, cash yield, fees)
 - [ ] Acquire and validate historical index/ETF market data (logging provenance in `data/manifest.json`)
 - [ ] Build the buy-only annual backtesting engine with invariant tests
+- [ ] Implement and validate synthetic data generators (Stationary Block Bootstrap, GJR-GARCH(1,1)-$t$, Stress Archetypes, GBM baseline) against empirical stylized facts
 - [ ] Implement benchmarks (Annual Lump Sum, Monthly Fixed-Day DCA, Oracle bounds)
 - [ ] Implement and backtest candidate strategies
-- [ ] Run rolling-window, regime, and out-of-sample robustness checks
+- [ ] Run rolling-window, regime, out-of-sample, synthetic Monte Carlo, and stress-test evaluations
 - [ ] Document final conclusions and visual comparisons in `reports/`

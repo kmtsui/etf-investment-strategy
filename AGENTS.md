@@ -46,6 +46,11 @@ Every backtest, strategy implementation, and analysis script must enforce the fo
    - Never optimize hyperparameters across the entire historical dataset and present in-sample results as general superiority.
    - Use chronological train/test splits, walk-forward validation, and parameter sensitivity grids for any parameterized strategy.
 
+7. **Synthetic Data Integrity**:
+   - **No Leakage in Calibration**: Fit bootstrap and GJR-GARCH generators strictly on the chronological training split when used for strategy tuning or selection; never calibrate on the full historical dataset and evaluate against a held-out real test set.
+   - **Stylized-Facts Validation**: Before trusting synthetic backtest results, validate simulated series against empirical ETF diagnostics—annualized drift, excess kurtosis, intra-year max drawdown quantiles, and autocorrelation of squared returns.
+   - **Deterministic Seeding**: All synthetic path generation must accept and log an explicit random seed.
+
 ## Engineering Conventions
 
 - **Tooling**:
@@ -53,7 +58,7 @@ Every backtest, strategy implementation, and analysis script must enforce the fo
   - Lint and format with `ruff`; run unit and invariant tests with `pytest`.
   - Enforce checks locally via `pre-commit` (`.pre-commit-config.yaml`) and in CI via `.github/workflows/ci.yml`.
 - **Structure**:
-  - `src/etf_strategy/`: Clean, modular, type-annotated Python modules (`data`, `engine`, `strategies`, `metrics`, `plotting`).
+  - `src/etf_strategy/`: Clean, modular, type-annotated Python modules (`data`, `synthetic`, `engine`, `strategies`, `metrics`, `plotting`).
   - `tests/`: Automated tests covering engine accounting and strategy invariants.
   - `notebooks/`: Exploratory and presentation notebooks that import logic from `src/etf_strategy/` rather than duplicating backtest code.
   - `reports/`: Reproducible tables, charts, and written analysis outputs.
@@ -70,6 +75,7 @@ Every backtest, strategy implementation, and analysis script must enforce the fo
     - Full annual budget exhaustion for every complete year.
     - Non-negative daily spend (`0.0 <= spend_t <= remaining_budget`) and share deltas.
     - Prefix invariance (calling the strategy with data truncated at $t$ produces the exact same `spend_t` as calling it during a full-history run up to $t$) to mechanically catch look-ahead bugs.
+  - **GBM Null-Hypothesis Sanity Test**: Verify that no causal timing strategy systematically beats Annual Lump Sum in expectation on positive-drift IID GBM, mechanically catching subtle look-ahead leaks or engine accounting bugs.
 
 ## Git Workflow
 
