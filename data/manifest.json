@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "description": "Audit manifest for raw market datasets excluded from git. Tracks ticker, date range, fetch timestamp, row count, and SHA-256 hash so reports remain reproducible despite upstream Adj Close revisions.",
+  "datasets": {}
+}

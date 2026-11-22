@@ -12,7 +12,8 @@ Each calendar year (January through December), an investor has a fixed budget $B
 2. **Full Annual Deployment**: 100% of each year's budget must be invested within that calendar year. No cash carries over across calendar years; any unspent cash remaining at year-end is automatically invested on the final trading day of December.
 3. **Buy-Only (No Selling)**: Shares can only be purchased and held. Selling, shorting, rebalancing out of equity, or borrowing against future years' budgets is prohibited.
 4. **Unrestricted Intra-Year Timing**: Purchases may occur on any trading day(s) within the year in any valid allocation summing to $B$.
-5. **No Look-Ahead Bias**: All practical strategies must rely strictly on information available on or before the trade execution date.
+5. **Automatic Dividend Reinvestment (DRIP)**: All ETF dividends are assumed to be automatically reinvested into the same ETF (modeled via total-return dividend-adjusted prices or explicit same-day reinvestment).
+6. **No Look-Ahead Bias**: All practical strategies must rely strictly on information available on or before the trade execution date.
 
 ## Benchmarks
 
@@ -48,26 +49,40 @@ Strategies to design, implement, and test include:
 - **Cash Yield Sensitivity**: Comparing 0% uninvested cash yield versus earning a short-term risk-free rate (e.g., 3-month T-bills) while waiting to deploy intra-year cash.
 - **Out-of-Sample Validation**: Chronological train/test splits and walk-forward evaluation to prevent overfitting parameterized strategies.
 
-## Planned Repository Structure
+## Repository Structure
 
 ```text
 .
-├── README.md           # Project overview, problem definition, and methodology
-├── AGENTS.md           # Instructions and invariants for AI agents and contributors
+├── README.md                    # Project overview, problem definition, and methodology
+├── AGENTS.md                    # Instructions, strategy interface, and invariants for agents/contributors
+├── pyproject.toml               # uv project configuration, dependencies, ruff, and pytest settings
+├── .pre-commit-config.yaml      # Local pre-commit hooks (ruff lint/format, pytest)
+├── .github/workflows/ci.yml     # GitHub Actions CI for linting and testing
 ├── data/
-│   ├── raw/            # Downloaded historical market data (gitignored)
-│   └── processed/      # Cleaned, aligned datasets (gitignored)
-├── src/                # Core data loaders, backtesting engine, strategies, and metrics
-├── notebooks/          # Exploratory data analysis and visualization notebooks
-├── reports/            # Generated figures, summary tables, and written findings
-└── tests/              # Automated unit tests for engine and strategy invariants
+│   ├── manifest.json            # Committed data provenance log (ticker, range, fetch time, rows, SHA256)
+│   ├── raw/                     # Downloaded historical market data (gitignored)
+│   └── processed/               # Cleaned, aligned datasets (gitignored)
+├── src/etf_strategy/            # Core data loaders, backtesting engine, strategies, and metrics
+├── notebooks/                   # Exploratory data analysis and visualization notebooks
+├── reports/                     # Generated figures, summary tables, and written findings
+└── tests/                       # Automated unit tests for engine and strategy invariants
+```
+
+## Development Setup
+
+```bash
+uv sync --dev
+uv run pre-commit install
+uv run ruff check .
+uv run pytest
 ```
 
 ## Roadmap
 
 - [x] Initialize repository, problem specification (`README.md`), and agent guidelines (`AGENTS.md`)
+- [x] Configure `uv` + `pyproject.toml`, `ruff`, `pytest`, `pre-commit`, CI, and `data/manifest.json`
 - [ ] Finalize modeling assumptions (tickers, date range, execution price, fractional shares, cash yield, fees)
-- [ ] Acquire and validate historical index/ETF market data
+- [ ] Acquire and validate historical index/ETF market data (logging provenance in `data/manifest.json`)
 - [ ] Build the buy-only annual backtesting engine with invariant tests
 - [ ] Implement benchmarks (Annual Lump Sum, Monthly Fixed-Day DCA, Oracle bounds)
 - [ ] Implement and backtest candidate strategies
